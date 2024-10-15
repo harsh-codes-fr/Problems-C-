@@ -16,42 +16,95 @@ class node {
 
 
 void printList(node* head) {
-    while(head != NULL) {
+    while(head != NULL)         {
         cout<<head->data<<" ";
         head = head->child;
     } 
     cout<<endl;
 }
 
-node* convertarrtolinkedlist(vector<int>&arr){
-    node* dummy = new node(-1);
-    node* temp = dummy;
+// node* convertarrtolinkedlist(vector<int>&arr){
+//     node* dummy = new node(-1);
+//     node* temp = dummy;
 
-    for(int i = 0;i<arr.size();i++){
-       temp->child = new node(arr[i]);
-       temp = temp->child;
+//     for(int i = 0;i<arr.size();i++){
+//        temp->child = new node(arr[i]);
+//        temp = temp->child;
+//     }   
+
+//     return dummy->child;
+// }
+
+// node* flattenlinkedlist(node*head){
+
+//     vector<int> arr;
+
+//     while(head!=NULL){
+//         node*t2 = head;
+//         while(t2!=nullptr){
+//             arr.push_back(t2->data);
+//             t2 = t2->child;
+//         }
+
+//         head = head -> next;
+//     }
+
+//     sort(arr.begin(),arr.end());
+
+//     return convertarrtolinkedlist(arr);
+// }
+
+node* merge(node* list1, node* list2){
+    // Create a dummy node as a
+    // placeholder for the result
+    node* dummyNode = new node(-1);
+    node* res = dummyNode;
+
+    // Merge the lists based on data values
+    while(list1 != NULL && list2 != NULL){
+        if(list1->data < list2->data){
+            res->child = list1;
+            res = list1;
+            list1 = list1->child;
+        }
+        else{
+            res->child = list2;
+            res = list2;
+            list2 = list2->child;
+        }
+        res->next = NULL;
     }
 
-    return dummy->child;
+    // Connect the remaining
+    // elements if any
+    if(list1){
+        res->child = list1;
+    } else {
+        res->child = list2;
+    }
+
+    // Break the last node's
+    // link to prevent cycles
+    if(dummyNode->child){
+        dummyNode->child->next = NULL;
+    }
+
+    return dummyNode->child;
 }
 
-node* flattenlinkedlist(node*head){
-
-    vector<int> arr;
-
-    while(head!=NULL){
-        node*t2 = head;
-        while(t2!=nullptr){
-            arr.push_back(t2->data);
-            t2 = t2->child;
-        }
-
-        head = head -> next;
+// Flattens a linked list with child pointers
+node* flattenLinkedList(node* head){
+    // If head is null or there 
+    // is no next node, return head
+    if(head == NULL || head->next == NULL){
+        return head;
     }
 
-    sort(arr.begin(),arr.end());
-
-    return convertarrtolinkedlist(arr);
+    // Recursively flatten the
+    // rest of the linked list
+    Node* mergedHead = flattenLinkedList(head->next);
+    head = merge(head, mergedHead);
+    return head;
 }
 
 void printoriginalLinkedlist(node*head,int depth){
@@ -92,7 +145,7 @@ int main() {
     printoriginalLinkedlist(head,0);
     cout<<endl;
     
-    node*flatten = flattenlinkedlist(head);
+    node*flatten = flattenLinkedList(head);
     printList(flatten);
     
     return 0;
